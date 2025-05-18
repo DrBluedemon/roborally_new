@@ -80,6 +80,7 @@ function UIButton:initTheme(_theme)
     self.fontColor = theme.button.fontColor
     self.iconDir = theme.button.iconDir
     self.iconAndTextSpace = theme.button.iconAndTextSpace
+    self.isVisible = true
 end
 
 -------------------------------------
@@ -87,6 +88,8 @@ end
 -- draw self
 -------------------------------------
 function UIButton:onDraw()
+    if not self.isVisible then return end
+
     local box = self:getBoundingBox()
     local x, y = box.left, box.top
     local w, h = box:getWidth(), box:getHeight()
@@ -158,6 +161,8 @@ end
 -- on mouse enter
 -------------------------------------
 function UIButton:onMouseEnter()
+    if not self.isVisible then return end
+
     self.isHoved = true
     if love.mouse.getSystemCursor("hand") then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
@@ -169,6 +174,8 @@ end
 -- on mouse level
 -------------------------------------
 function UIButton:onMouseLeave()
+    if not self.isVisible then return end
+
     self.isHoved = false
     love.mouse.setCursor()
 end
@@ -178,6 +185,8 @@ end
 -- on mouse down
 -------------------------------------
 function UIButton:onMouseDown(x, y)
+    if not self.isVisible then return end
+
     self.isPressed = true
 end
 
@@ -186,6 +195,8 @@ end
 -- on mouse up
 -------------------------------------
 function UIButton:onMouseUp(x, y)
+    if not self.isVisible then return end
+
     self.isPressed = false
 end
 
@@ -260,6 +271,14 @@ end
 -------------------------------------
 function UIButton:setStrokeColor(color)
     self.strokeColor = color
+end
+
+-------------------------------------
+-- set button stroke color
+-- @tab color color = {r, g, b, a}
+-------------------------------------
+function UIButton:setVisible(visible)
+    self.isVisible = visible
 end
 
 return UIButton

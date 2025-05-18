@@ -3,27 +3,13 @@ local map_creation = {
 }
 local MapConstructor = require("src.map.MapConstructor")
 
+
+-- [ Main Functions ] ---
 function map_creation:onLoad()
+end
 
-    local button = Ui_Handler:newElement("button", self.uiComponent:getControlContainer())
-    button:setPos(100, 100)
-    button:setSize(200, 50)
-    button:setIcon("assets/img/icon_haha.png")
-    button:setText("Du Lusche")
-    button.events:on(UI_CLICK, function()
-        Scene_Manager:SetNewScene("main_menu", "test_rectangle")
-    end)
-
-    print(LASER_SHOOT_ONE)
-
-    self.map = MapConstructor:newMap("test", 8, 8)
-    self.map:addTile(LASER_SHOOT_ONE, 0, 2, 2, 3)
-    self.map:addTile(HOLE, 0, 0, 5, 7)
-    self.map:addTile(HOLE, 0, 0, 3, 1)
-    self.map:addTile(HOLE, 0, 0, 1, 8)
-    self.map:generateMapImage()
-
-    print("Loaded 2")
+function map_creation:onSetupUi()
+    self:UIMapSetup()
 end
 
 function map_creation:update(dt)
@@ -31,19 +17,24 @@ function map_creation:update(dt)
 end
 
 function map_creation:draw(layerName)
-    if layerName == "background" then
---         love.graphics.setColor(255, 0, 0)
---        love.graphics.rectangle("fill", 0,0, _GgameWidth, _GgameHeight)
-    end
-
-    if layerName == "game_1" then
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.draw(self.map:getMapImage(), CAM.x * 100, CAM.y * 100)
-    end
-
     if layerName == "ui" then
+        love.graphics.setColor(0.188, 0.188, 0.188)
+        love.graphics.rectangle("fill", _GgameWidth * 0.8, 0, _GgameWidth * 0.2, _GgameHeight)
         self.uiComponent:draw()
     end
+end
+
+-- [ Extra UI Stuff] ----
+
+function map_creation:UIMapSetup()
+    self.dropdown = Ui_Handler:newElement("dropdown", self.uiComponent:getControlContainer())
+    self.dropdown:setItems({"8x8", "12x12", "14x14"})
+    self.dropdown:setText("Welche Größe?")
+    self.dropdown:setPos(_GgameWidth * 0.82, 200)
+    self.dropdown:setSize(250, 50)
+    self.dropdown:setOnChange(function(value, index)
+        print("Selected:", value)
+    end)
 end
 
 return map_creation

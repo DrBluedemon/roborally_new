@@ -29,8 +29,6 @@ function TileManger:LoadTiles()
         local imageData = canvas:newImageData()
         local tileImage = love.graphics.newImage(imageData)
 
-        canvas:newImageData():encode("png", i .. "_filename.png")
-
         tile.img = tileImage
         tile.data = self:GetTileData(i - 1)
 

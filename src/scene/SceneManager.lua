@@ -17,6 +17,9 @@ function Scene_Manager:LoadScenes()
 
             self.scenes[sceneName] = require(scenePath)
             self.scenes[sceneName]:onLoad()
+
+            if self.scenes[sceneName].onSetupUi then self.scenes[sceneName]:onSetupUi() end
+
             self.scenes[sceneName].canvas = love.graphics.newCanvas(_GgameWidth, _GgameHeight)
             self.scenes[sceneName].canvas_offset = { x = 0, y = 0 }
         end
@@ -63,6 +66,9 @@ function Scene_Manager:SetNewScene(newSceneName, transitionName)
 
         table.insert(self.active_uiComponents, currentScene.uiComponent)
         table.insert(self.active_uiComponents, newScene.uiComponent)
+
+        if self.new_scene.onLoad then self.new_scene:onLoad() end
+        if self.new_scene.onSetupUi then self.new_scene:onSetupUi() end
 
         currentScene.uiComponent:getControlContainer():setChildrenEnabled(false)
         newScene.uiComponent:getControlContainer():setChildrenEnabled(false)

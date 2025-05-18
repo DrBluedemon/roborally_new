@@ -26,7 +26,7 @@ function love.load()
 
     Scene_Manager:LoadScenes()
     Scene_Manager:LoadTransitions()
-    Scene_Manager:SetNewScene("main_menu")
+    Scene_Manager:SetNewScene("map_creation")
 
     Graphics_Handler:SetupLayers(_GgameWidth, _GgameHeight)
 end

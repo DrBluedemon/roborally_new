@@ -41,6 +41,11 @@ function ui_handler:newElement(elementName, content)
         content:addChild(scrollbar)
 
         return scrollbar
+    elseif elementName == "dropdown" then
+        local dropdown = UIDropDown:new(content)
+        content:addChild(dropdown)
+
+        return dropdown
     end
 end
 
