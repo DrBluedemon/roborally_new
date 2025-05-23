@@ -41,6 +41,11 @@ function Map_Constructor:newMap(name, width, height)
     return self
 end
 
+--  Function to update the Name
+function Map_Constructor:setName(name)
+    self.mapData.name = name
+end
+
 -- Function to add a tile with a specified tileID and orientation
 function Map_Constructor:addTile(tileID, tileType, orientation, x, y)
     -- Pack the tileID and orientation into a single value
