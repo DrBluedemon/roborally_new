@@ -43,7 +43,8 @@ local UIButton = UIControl:extend("UIButton", {
     disableColor = nil,
     strokeColor = nil,
     stroke = 1,
-    iconAndTextSpace = 6
+    iconAndTextSpace = 6,
+    isTextBold = false
 })
 
 -------------------------------------
@@ -146,6 +147,13 @@ function UIButton:onDraw()
         color = self.fontColor
         love.graphics.setColor(color[1], color[2], color[3], color[4])
         love.graphics.draw(text, textX, textY)
+
+        if self.isTextBold then
+            love.graphics.draw(text, textX + 1, textY)
+            love.graphics.draw(text, textX - 1, textY)
+            love.graphics.draw(text, textX, textY + 1)
+            love.graphics.draw(text, textX, textY - 1)
+        end
     end
 
     -- 图标
@@ -206,6 +214,14 @@ end
 -------------------------------------
 function UIButton:setIcon(icon)
     self.iconImg = love.graphics.newImage(icon)
+end
+
+-------------------------------------
+-- set if the text on the button should be bold
+-- @boolean value
+-------------------------------------
+function UIButton:setTextBold(value)
+    self.isTextBold = value
 end
 
 -------------------------------------

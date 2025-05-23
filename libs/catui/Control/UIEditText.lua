@@ -225,8 +225,27 @@ function UIEditText:insertCharAt(char, x, y)
 end
 
 function UIEditText:insertChar(char)
+    -- Block newlines if moreLine is false
+    if not self.moreLine and char:match("[\n\r]") then return end
+
+    local currentText = self.label:getText()
+    local wraps = self.label:getWrap()
+    local line = wraps[self.cursorCoords.y] or ""
+    local byteoffset, left, right = utf8.offset(line, self.cursorCoords.x), "", ""
+    if byteoffset then
+        left = line:sub(1, byteoffset - 1)
+        right = line:sub(byteoffset)
+    end
+    local newLine = left .. char .. right
+    local newLineWidth = self.label:measureWidth(newLine)
+
+    if not self.moreLine and newLineWidth >= self:getBoundingBox():getWidth() - 10 then
+        return -- prevent text from overflowing horizontally
+    end
+
     self:insertCharAt(char, self.cursorCoords.x, self.cursorCoords.y)
 end
+
 
 function UIEditText:mergeLinesAt(x, y)
     -- merge the end of a previous line with the
@@ -278,7 +297,9 @@ function UIEditText:onKeyDown(key, scancode, isrepeat)
     if key == "backspace" and byteoffset then
         self:backspace()
     elseif key == "return" then
-        self:newline()
+        if self.moreLine then
+            self:newline()
+        end
     elseif key == "tab" then
         self:insertChar('  ')
     elseif key == "up" then
@@ -313,7 +334,25 @@ end
 -------------------------------------
 function UIEditText:textInput(text)
     self:insertChar(text)
+    self:onTextInput()
 end
+
+-------------------------------------
+-- (callback)
+-- getText
+-------------------------------------
+function UIEditText:getText()
+    self.label:getText()
+end
+
+
+-------------------------------------
+-- (callback)
+-- on text input
+-------------------------------------
+function UIEditText:onTextInput()
+end
+
 
 -------------------------------------
 -- (callback)
@@ -363,8 +402,18 @@ end
 -- @string text
 -------------------------------------
 function UIEditText:setText(text)
+    if not self.moreLine then
+        local lines = csplit(text, "\n")
+        local singleLine = lines[1] or ""
+        local maxWidth = self:getBoundingBox():getWidth() - 10
+        while self.label:measureWidth(singleLine) > maxWidth do
+            singleLine = singleLine:sub(1, -2)
+        end
+        text = singleLine
+    end
     self.label:setText(text)
 end
+
 
 -------------------------------------
 -- get text
@@ -437,6 +486,38 @@ end
 -------------------------------------
 function UIEditText:setFontColor(color)
     self.label:setFontColor(color)
+end
+
+-------------------------------------
+-- set font color
+-- @tab color
+-------------------------------------
+function UIEditText:setBackgroundColor(color)
+    self.backgroundColor = color
+end
+
+-------------------------------------
+-- set font color
+-- @tab color
+-------------------------------------
+function UIEditText:setCursorColor(color)
+    self.cursorColor = color
+end
+
+-------------------------------------
+-- set font color
+-- @tab color
+-------------------------------------
+function UIEditText:setFontSize(size)
+    self.label:setFontSize(size)
+end
+
+-------------------------------------
+-- set font color
+-- @tab color
+-------------------------------------
+function UIEditText:setFont(font)
+    self.label:setFont(font)
 end
 
 -------------------------------------

@@ -159,18 +159,14 @@ function UIManager:mouseUp(x, y, button, isTouch)
         -- 点击事件验证
         if self.rootCtrl then
             local hitCtrl = self.rootCtrl:hitTest(x, y)
-            if hitCtrl == self.holdCtrl then
-                -- 检测是否双击
+            if hitCtrl == self.holdCtrl and self.holdCtrl.isVisible ~= false then
+                -- Doppelklickprüfung
                 if self.lastClickCtrl and self.lastClickCtrl == self.holdCtrl and (love.timer.getTime() - self.lastClickTime) <= 0.4 then
-                    -- 派发双击事件
                     dispatch(self.holdCtrl, UI_DB_CLICK, self.holdCtrl, x, y)
-
                     self.lastClickCtrl = nil
                     self.lastClickTime = 0
                 else
-                    -- 派发点击事件
                     dispatch(self.holdCtrl, UI_CLICK, self.holdCtrl, x, y)
-
                     self.lastClickCtrl = self.holdCtrl
                     self.lastClickTime = love.timer.getTime()
                 end

@@ -38,7 +38,8 @@ local UILabel = UIControl:extend("UILabel", {
     drawable = nil,
     color = {0, 0, 0, 255},
     lineHeight = 1,
-    autoSize = true
+    autoSize = true,
+    isBold = false
 })
 
 -------------------------------------
@@ -49,16 +50,17 @@ function UILabel:init(fontName, text, size)
 
     self.size = size
     self.text = text
+    self.isBold = false
 
     self:setClip(true)
 
     if fontName == nil or fontName == "" then
-        self.fontName = "assets/font/visat.ttf"
+        self.fontName = "assets/font/Grand9K Pixel.ttf"
     else
         self.fontName = fontName
     end
 
-    self.font = love.graphics.newFont("assets/font/visat.ttf", size)
+    self.font = love.graphics.newFont("assets/font/Grand9K Pixel.ttf", size)
     self.drawable = love.graphics.newText(self.font, text)
     self.font:setLineHeight(self.lineHeight)
 
@@ -79,6 +81,24 @@ function UILabel:onDraw()
     love.graphics.setColor(color[1], color[2], color[3], color[4])
     love.graphics.draw(self.drawable, box:getX(), box:getY())
     love.graphics.setColor(rb, gb, bb, ab)
+
+    if self.isBold then
+        love.graphics.setColor(color[1], color[2], color[3], color[4])
+        love.graphics.draw(self.drawable, box:getX() + 1, box:getY())
+        love.graphics.setColor(rb, gb, bb, ab)
+
+        love.graphics.setColor(color[1], color[2], color[3], color[4])
+        love.graphics.draw(self.drawable, box:getX() - 1, box:getY())
+        love.graphics.setColor(rb, gb, bb, ab)
+
+        love.graphics.setColor(color[1], color[2], color[3], color[4])
+        love.graphics.draw(self.drawable, box:getX(), box:getY() + 1)
+        love.graphics.setColor(rb, gb, bb, ab)
+
+        love.graphics.setColor(color[1], color[2], color[3], color[4])
+        love.graphics.draw(self.drawable, box:getX(), box:getY() - 1)
+        love.graphics.setColor(rb, gb, bb, ab)
+    end
 end
 
 -------------------------------------
@@ -90,6 +110,14 @@ function UILabel:setText(text)
     self.drawable:set(self.text)
 
     self:textTest()
+end
+
+-------------------------------------
+-- set if bold
+-- @boolean value
+-------------------------------------
+function UILabel:setBold(value)
+    self.isBold = value
 end
 
 -------------------------------------
