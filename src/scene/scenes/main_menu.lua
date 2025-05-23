@@ -1,23 +1,22 @@
 local main_scene = {
-    uiComponent = UIManager:new()
+    uiComponent = TULIBOA.new()
 }
-
 function main_scene:onLoad()
 
-    local button = Ui_Handler:newElement("button", self.uiComponent:getControlContainer())
-    button:setPos(100, 100)
-    button:setSize(200, 50)
-    button:setIcon("assets/img/icon_haha.png")
-    button:setText("Dies ist ein Test")
-    button.events:on(UI_CLICK, function()
-        Scene_Manager:SetNewScene("map_creation", "test_rectangle")
-    end)
+    self.uiComponent:removeAllActiveElements()
+
+    self.button = Ui_Handler:newElement("button", self.uiComponent)
+    self.button:setPos(100, 100)
+    self.button:setSize(200, 50)
+    self.button:setText("UwU")
 
     print("Loaded")
 end
 
 function main_scene:update(dt)
     self.uiComponent:update(dt)
+
+    self.button:setX(self.button:getX() + 1)
 end
 
 function main_scene:draw(layerName)

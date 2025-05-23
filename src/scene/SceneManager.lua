@@ -70,8 +70,8 @@ function Scene_Manager:SetNewScene(newSceneName, transitionName)
         if self.new_scene.onLoad then self.new_scene:onLoad() end
         if self.new_scene.onSetupUi then self.new_scene:onSetupUi() end
 
-        currentScene.uiComponent:getControlContainer():setChildrenEnabled(false)
-        newScene.uiComponent:getControlContainer():setChildrenEnabled(false)
+        currentScene.uiComponent:setChildrenEnabled(false)
+        newScene.uiComponent:setChildrenEnabled(false)
 
         if transition and transition.DoTransition then
             transition:DoTransition(currentScene, newScene)
@@ -79,8 +79,8 @@ function Scene_Manager:SetNewScene(newSceneName, transitionName)
     else
         -- No transition
         if currentScene and currentScene.uiComponent then
-            for _, child in ipairs(currentScene.uiComponent:getControlContainer():getChildren()) do
-                currentScene.uiComponent:getControlContainer():removeChild(child)
+            for _, child in ipairs(currentScene.uiComponent:getChildren()) do
+                currentScene.uiComponent:removeChild(child)
             end
         end
 
@@ -100,13 +100,13 @@ function Scene_Manager:FinaliseSceneSwitch()
     local newScene = self:GetScene(self.new_scene)
 
     if oldScene and oldScene.uiComponent then
-        for _, child in ipairs(oldScene.uiComponent:getControlContainer():getChildren()) do
-            oldScene.uiComponent:getControlContainer():removeChild(child)
+        for _, child in ipairs(oldScene.uiComponent:getChildren()) do
+            oldScene.uiComponent:removeChild(child)
         end
     end
 
     if newScene then
-        newScene.uiComponent:getControlContainer():setChildrenEnabled(true)
+        newScene.uiComponent:setChildrenEnabled(true)
         self.active_scene = self.new_scene
         self.new_scene = nil
         -- self.transition = nil

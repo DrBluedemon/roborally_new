@@ -1,52 +1,8 @@
 local ui_handler = {}
 
-function ui_handler:newElement(elementName, content)
-    if elementName == "button" then
-        local button = UIButton:new()
-        content:addChild(button)
-
-        return button
-    elseif elementName == "checkbox" then
-        local checkbox = UICheckBox:new()
-        content:addChild(checkbox)
-
-        return checkbox
-    elseif elementName == "content" then
-        local contentElement = UIContent:new()
-        content:addChild(contentElement)
-
-        return content
-    elseif elementName == "edittext" then
-        local edittext = edittext:new()
-        content:addChild(edittext)
-
-        return edittext
-    elseif elementName == "image" then
-        local image = UIImage:new()
-        content:addChild(image)
-
-        return image
-    elseif elementName == "label" then
-        local label = UILabel:new()
-        content:addChild(label)
-
-        return label
-    elseif elementName == "progressbar" then
-        local progressbar = UIProgressBar:new()
-        content:addChild(progressbar)
-
-        return progressbar
-    elseif elementName == "scrollbar" then
-        local scrollbar = UIScrollBar:new()
-        content:addChild(scrollbar)
-
-        return scrollbar
-    elseif elementName == "dropdown" then
-        local dropdown = UIDropDown:new(content)
-        content:addChild(dropdown)
-
-        return dropdown
-    end
+function ui_handler:newElement(elementName, tuilboa, parent)
+    local element = tuilboa:newElement(elementName)
+    return element
 end
 
 function ui_handler:update(dt)
@@ -79,7 +35,6 @@ function ui_handler:mouseUp(x, y, button, isTouch)
         if not y then y = 999999999 end
 
         componet:mouseUp(x, y, button, isTouch)
-        print(i)
     end
 end
 
