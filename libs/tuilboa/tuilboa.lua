@@ -1,3 +1,5 @@
+-- TUILBOA = [T]he [UI] [L]ib [B]ecause [O]f [A]nger
+
 -- Shared element definitions (loaded once)
 local sharedElements = {}
 
