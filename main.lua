@@ -2,15 +2,19 @@ JSON = require("libs.json")
 PUSH = require("libs.push")
 FLUX = require("libs.flux")
 TILE_MANAGER = require("src.tiles.TileManager")
-require("libs.catui")
 require("src.cam")
 require("src.tiles.TileTypes")
+require("libs.color")
+require("libs.tuilboa.Element")
+TULIBOA = require("libs.tuilboa.tuilboa")
 
 MapConstructor = require("src.map.MapConstructor")
 Graphics_Handler = require("src.GraphicsHandler")
 Scene_Manager = require("src.scene.SceneManager")
 Ui_Handler = require("src.ui_Handler")
 local push = require("libs.push")
+
+PIXEL_TEXT_FONT = "assets/font/Grand9K Pixel.ttf"
 
 
 --- [ VARIABLES ] ------
@@ -22,11 +26,14 @@ push:setupScreen(_GgameWidth, _GgameHeight, windowWidth, windowHeight, {fullscre
 
 --- [ FUNCTIONS ] ------
 function love.load()
+    love.keyboard.setKeyRepeat(true)
     TILE_MANAGER:LoadTiles()
+    TULIBOA.initElements()
+
 
     Scene_Manager:LoadScenes()
     Scene_Manager:LoadTransitions()
-    Scene_Manager:SetNewScene("map_creation")
+    Scene_Manager:SetNewScene("main_menu")
 
     Graphics_Handler:SetupLayers(_GgameWidth, _GgameHeight)
 end
