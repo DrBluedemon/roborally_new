@@ -5,16 +5,26 @@ Element.__index = Element
 
 function Element:new(x, y, w, h)
     local e = setmetatable({}, self)
-    e.x = x or 0
-    e.y = y or 0
-    e.w = w or 0
-    e.h = h or 0
+    e.x = x or 10
+    e.y = y or 10
+    e.z = 1
+    e.w = w or 10
+    e.h = h or 10
+    e.enabled = false
     e.visible = true
     e.parent = nil
     return e
 end
 
 -- Drawing
+function Element:postDraw()
+    
+end
+
+function Element:pastDraw()
+    
+end
+
 function Element:draw()
     if not self.visible then return end
     love.graphics.setColor(1, 1, 1, 1)
@@ -52,13 +62,17 @@ function Element:isHovered(mx, my)
     mx = mx or gameMouseX
     my = my or gameMouseY
     local x, y = self:getAbsolutePosition()
-    return mx >= x and mx <= x + self.w and
-           my >= y and my <= y + self.h
+    return mx >= x 
+    and mx <= x + self.w and
+           my >= y and 
+           my <= y + self.h and 
+           self.handler:isGettingHoverd(mx, my, self)
 end
 
 -- Parenting
-function Element:addParent(parent)
+function Element:setParent(parent)
     self.parent = parent
+    parent:addChild(self)
 end
 
 function Element:getAbsolutePosition()
@@ -75,26 +89,28 @@ end
 
 function Element:addChild(child)
     self.children = self.children or {}
-    child:addParent(self)
 
     table.insert(self.children, child)
 end
 
 -- Setters
 function Element:setX(x)
-    local parentX = self.parent and self.parent.y or 0 
-    self.x = x + parentX
+    self.x = x
 end
 function Element:setY(y) 
-    local parentY = self.parent and self.parent.y or 0 
-    self.y = y + parentY
+    self.y = y
 end
-function Element:setPos(x, y)
-    local parentX = self.parent and self.parent.y or 0
-    local parentY = self.parent and self.parent.y or 0
-    
-    self.x = x + parentX
-    self.y = y + parentY
+function Element:setZ(z)
+    self.z = z
+    -- if not self.children then return end
+    -- for _, c in ipairs(self.children) do
+    --     c:setZ(z + 1)
+    -- end
+end
+
+function Element:setPos(x, y)    
+    self.x = x 
+    self.y = y
 end
 
 function Element:setWidth(w) self.w = w end
@@ -106,15 +122,28 @@ end
 
 function Element:setVisible(state)
     self.visible = state
+    if self.children then
+        for i, child in ipairs(self.children) do
+            child:setVisible(state)
+        end 
+    end
+end
+
+function Element:setEnabled(state)
+    self.enabled = state
 end
 
 -- Getters
 function Element:getX() return self.x end
 function Element:getY() return self.y end
+function Element:getZ() return self.z end
 function Element:getWidth() return self.w end
 function Element:getHeight() return self.h end
 function Element:isVisible() return self.visible end
 function Element:getParent() return self.parent end
+function Element:getEnabled() return self.enabled end
+function Element:isEnabled() return self.enabled end
+function Element:getPos() return self.x, self.y end
 
 
 -- Inheritance helper

@@ -16,10 +16,6 @@ function Scene_Manager:LoadScenes()
             local scenePath = "src.scene.scenes." .. sceneName
 
             self.scenes[sceneName] = require(scenePath)
-            self.scenes[sceneName]:onLoad()
-
-            if self.scenes[sceneName].onSetupUi then self.scenes[sceneName]:onSetupUi() end
-
             self.scenes[sceneName].canvas = love.graphics.newCanvas(_GgameWidth, _GgameHeight)
             self.scenes[sceneName].canvas_offset = { x = 0, y = 0 }
         end
@@ -67,8 +63,8 @@ function Scene_Manager:SetNewScene(newSceneName, transitionName)
         table.insert(self.active_uiComponents, currentScene.uiComponent)
         table.insert(self.active_uiComponents, newScene.uiComponent)
 
-        if self.new_scene.onLoad then self.new_scene:onLoad() end
-        if self.new_scene.onSetupUi then self.new_scene:onSetupUi() end
+        if newScene.onLoad then newScene:onLoad() end
+        if newScene.onSetupUi then newScene:onSetupUi() end
 
         currentScene.uiComponent:setChildrenEnabled(false)
         newScene.uiComponent:setChildrenEnabled(false)
@@ -79,9 +75,7 @@ function Scene_Manager:SetNewScene(newSceneName, transitionName)
     else
         -- No transition
         if currentScene and currentScene.uiComponent then
-            for _, child in ipairs(currentScene.uiComponent:getChildren()) do
-                currentScene.uiComponent:removeChild(child)
-            end
+            -- currentScene.uiComponent:removeAllActiveElements()
         end
 
         self.active_scene = newSceneName
@@ -100,23 +94,18 @@ function Scene_Manager:FinaliseSceneSwitch()
     local newScene = self:GetScene(self.new_scene)
 
     if oldScene and oldScene.uiComponent then
-        for _, child in ipairs(oldScene.uiComponent:getChildren()) do
-            oldScene.uiComponent:removeChild(child)
-        end
+        oldScene.uiComponent:removeAllActiveElements()
     end
 
     if newScene then
         newScene.uiComponent:setChildrenEnabled(true)
         self.active_scene = self.new_scene
         self.new_scene = nil
-        -- self.transition = nil
         newScene.canvas_offset = { x = 0, y = 0 }
 
         if newScene.EndTransition then
             newScene:EndTransition(oldScene)
         end
-        if newScene.onLoad then newScene:onLoad() end
-        if newScene.onSetupUi then newScene:onSetupUi() end
     end
 end
 
@@ -125,7 +114,7 @@ function Scene_Manager:UpdateScene(dt)
     local newScene = self.new_scene and self:GetScene(self.new_scene) or nil
 
     if self.transition and not self.transition:isActive() then
-        self.transition = false
+        self.transition =nil
     end
 
     if self.transition then
@@ -134,7 +123,7 @@ function Scene_Manager:UpdateScene(dt)
         if newScene and newScene.update then newScene:update(dt) end
     else
         if currentScene and currentScene.update then currentScene:update(dt) end
-        if currentScene and currentScene.uiComponent then currentScene.uiComponent:update(dt) end
+        if currentScene and currentScene.uiComponet then currentScene:update(dt) end
     end
 end
 
@@ -191,6 +180,36 @@ function Scene_Manager:DrawScene()
     end
 
     PUSH:finish()
+end
+
+function Scene_Manager:mousemoved(x, y, dx, dy)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.mousemoved then currentScene:mousemoved(x, y, dx, dy) end
+end
+
+function Scene_Manager:mousepressed(x, y, button, isTouch)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.mousepressed then currentScene:mousepressed(x, y, button, isTouch) end
+end
+
+function Scene_Manager:mousereleased(x ,y, button, isTouch)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.mousereleased then currentScene:mousereleased(x, y, button, isTouch) end
+end
+
+function Scene_Manager:keypressed(key, scancode, isrepeat)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.keypressed then currentScene:keypressed(key, scancode, isrepeat) end
+end
+
+function Scene_Manager:keyreleased(key)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.keyreleased then currentScene:keyreleased(key) end
+end
+
+function Scene_Manager:wheelmoved(x, y)
+    local currentScene = self:GetCurrentScene()
+    if currentScene.wheelmoved then currentScene:wheelmoved(x, y) end
 end
 
 return Scene_Manager

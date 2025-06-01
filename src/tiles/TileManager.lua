@@ -9,16 +9,12 @@ local TileManger = {
 
 function TileManger:LoadTiles()
     local tilesCount = tileSet.tilecount
-    print(tilesCount)
 
     for i = 1,tilesCount , 1 do
         local tile = {}
 
-        print(i % 8)
         local y = math.floor( (i - 1) / 8 )
         local x = (i - 1) % 8
-
-        print("X: " .. x .. " Y: " .. y * 100)
 
         local canvas = love.graphics.newCanvas(100, 100)
         love.graphics.setCanvas(canvas)
@@ -43,10 +39,8 @@ end
 function TileManger:GetTile(tileID, tileType)
     local tiles = TILE_TYPES[tileID]
 
-    print(TILE_TYPES[FLOOR])
-
     if type(tiles) == "table" then
-        return tiles[tileType] or nil
+        return self.tiles[tiles[tileType]] or nil
     else
         return self.tiles[tiles] or nil
     end

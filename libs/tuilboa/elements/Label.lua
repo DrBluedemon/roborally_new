@@ -1,21 +1,33 @@
 local Label = Element:extend()
 
--- Defaults
-Label.text = ""
-Label.fontPath = "assets/font/Grand9K Pixel.ttf"
-Label.fontSize = 16
-Label.lineHeight = 1.0
-Label.font = love.graphics.newFont(Label.fontPath, Label.fontSize)
-Label.color = {1, 1, 1, 1}
-Label.align = "left"
-Label.isBold = false
-Label.visible = true
-Label.drawable = love.graphics.newText(Label.font, Label.text)
+function Label:new()
+    local instance = setmetatable({}, Label)
+
+    instance.text = ""
+    instance.fontPath = "assets/font/Grand9K Pixel.ttf"
+    instance.fontSize = 16
+    instance.lineHeight = 1.0
+    instance.font = love.graphics.newFont(instance.fontPath, instance.fontSize)
+    instance.color = {1, 1, 1, 1}
+    instance.align = "left"
+    instance.isBold = false
+    instance.visible = true
+    instance.drawable = love.graphics.newText(instance.font, instance.text)
+    instance.w = instance.drawable:getWidth()
+    instance.h = instance.drawable:getHeight()
+
+    return instance
+end
+
+function Label:update(dt)
+end
 
 -- Set the label text and update drawable
 function Label:setText(text)
     self.text = text or ""
     self.drawable = love.graphics.newText(self.font, self.text)
+    self.w = self.drawable:getWidth()
+    self.h = self.drawable:getHeight()
 end
 
 -- Set font size and recreate font and drawable
@@ -50,6 +62,12 @@ end
 -- Enable or disable bold drawing
 function Label:setBold(isBold)
     self.isBold = isBold
+end
+
+function Label:mousepressed(x, y, button)
+    if self.parent and self:getEnabled() then
+        self.parent:mousepressed(x, y, button)
+    end
 end
 
 -- Set color
@@ -91,5 +109,10 @@ function Label:draw()
 
     love.graphics.setColor(1, 1, 1, 1)
 end
+
+--- Getters
+function Label:getText() return self.text end
+function Label:getFont() return self.font end
+
 
 return Label

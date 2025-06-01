@@ -11,8 +11,8 @@ function right_to_left:DoTransition(currentScene, newScene)
     self.newScene = newScene
 
     -- Animate current scene out and new scene in
-    FLUX.to(currentScene.canvas_offset, 1, { x = -w }):ease("quadinout")
-    FLUX.to(newScene.canvas_offset, 1, { x = 0 }):ease("quadinout")
+    FLUX.to(currentScene.canvas_offset, 1, { x = -w}):ease("quadinout")
+    FLUX.to(newScene.canvas_offset, 1, { x = 0}):ease("quadinout")
         :oncomplete(function()
             self.active = false
             -- Finalize the transition

@@ -1,34 +1,34 @@
 local Button = Element:extend()
 
 function Button:new()
-    local instance = self
-
-    print("Test")
+    local instance = setmetatable({}, Button)
 
     -- Enabled by default
     instance.enabled = true
 
     -- Create a Label inside the Button for text display
     instance.font = "assets/font/Grand9K Pixel.ttf"
-    instance.fontSize = 24
-    instance.label = Ui_Handler:newElement("label", self.handler)
+    instance.label = Ui_Handler:newElement("label", self.handler, instance)
     instance.label:setText("Button")
     instance.label:setFont("assets/font/Grand9K Pixel.ttf")
     instance.label:setVisible(true)
-    instance.label:setColor(Color(255, 0, 0, 255))
-    instance.label:setFontSize(24)
+    instance.label:setColor(Color(255, 255, 255, 255))
+    instance.label:setFontSize(20)
+    instance.label:setSize(100, 100)
     instance.label:setAlign("center")  -- Assuming your Label supports align
-    instance.label:setPos(100, 0)
-
-    instance:addChild(instance.label)
+    instance.label:setPos(100, 6)
+    instance.label:setSize(100, 100)
+    instance.label:setEnabled(true)
+    instance.label:setParent(instance)
 
     -- Colors
-    instance.bgColor = {0.2, 0.2, 0.8, 1}
-    instance.hoverColor = {0.3, 0.3, 1, 1}
-    instance.pressedColor = {0.1, 0.1, 0.6, 1}
+    instance.bgColor = Color(74, 74, 74)
+    instance.hoverColor = Color(92, 92, 92)
+    instance.pressedColor = Color(120, 120, 120)
 
     instance.textColor = {1, 1, 1, 1}
     instance.pressed = false
+    instance:setEnabled(true)
 
 --    instance.onClick = function() end
 
@@ -64,15 +64,15 @@ function Button:setTextColor(r, g, b, a)
 end
 
 function Button:setBgColor(r, g, b, a)
-    self.bgColor = {r or 0.2, g or 0.2, b or 0.8, a or 1}
+    self.bgColor = Color(r, g, b, a)
 end
 
 function Button:setHoverColor(r, g, b, a)
-    self.hoverColor = {r or 0.3, g or 0.3, b or 1, a or 1}
+    self.hoverColor = Color(r, g, b, a)
 end
 
 function Button:setPressedColor(r, g, b, a)
-    self.pressedColor = {r or 0.1, g or 0.1, b or 0.6, a or 1}
+    self.pressedColor = Color(r, g, b, a)
 end
 
 function Button:setOnClick(func)
@@ -87,7 +87,7 @@ function Button:update(dt)
 end
 
 function Button:draw()
-    if not self.visible or not self:isEnabled() then return end
+    if not self.visible then return end
 
     local x, y = self:getAbsolutePosition()
 
@@ -98,8 +98,11 @@ function Button:draw()
         bg = self.hoverColor
     end
 
+    love.graphics.setColor(Color(30, 30, 30))
+    love.graphics.rectangle("fill", x, y, self.w, self.h, 0)
+
     love.graphics.setColor(bg)
-    love.graphics.rectangle("fill", x, y, self.w, self.h, 5, 5)
+    love.graphics.rectangle("fill", x + 4, y + 4, self.w - 8, self.h - 8, 0)
 
     -- Position label centered inside button
     self.label:draw()
@@ -107,15 +110,14 @@ function Button:draw()
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function Button:setPos(x, y)
-    self.x = x
-    self.y = y
+function Button:setSize(w, h)
+    self.w = w
+    self.h = h
 end
 
 function Button:mousepressed(mx, my, button, isTouch)
     if not self:isEnabled() then return end
     if button == 1 and self:isHovered(mx, my) then
-        print("pressed")
         self.pressed = true
     end
 end
@@ -123,7 +125,6 @@ end
 function Button:mousereleased(mx, my, button, isTouch)
     if not self:isEnabled() then return end
     if button == 1 and self.pressed then
-        print("release")
         self.pressed = false
         if self:isHovered(mx, my) then
             self:onClick(button)

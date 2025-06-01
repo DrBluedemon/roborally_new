@@ -34,6 +34,7 @@ function Map_Constructor:newMap(name, width, height)
                 tileOrientation = 0,
                 tileType = 0,
                 tileData = 0,
+                layer = {}
             } -- Initially, set all tiles to 0 (empty/no tile)
         end
     end
@@ -47,18 +48,32 @@ function Map_Constructor:setName(name)
 end
 
 -- Function to add a tile with a specified tileID and orientation
-function Map_Constructor:addTile(tileID, tileType, orientation, x, y)
+function Map_Constructor:addTile(tileID, tileType, orientation, x, y, layer)
     -- Pack the tileID and orientation into a single value
-    self.mapData.tiles[y][x].tileID = tileID
-    self.mapData.tiles[y][x].tileOrientation = orientation
-    self.mapData.tiles[y][x].tileType = tileType
+    if not layer then
+        self.mapData.tiles[y][x].tileID = tileID
+        self.mapData.tiles[y][x].tileOrientation = orientation
+        self.mapData.tiles[y][x].tileType = tileType 
+    else
+        self.mapData.tiles[y][x].layer[layer] = {}
+        self.mapData.tiles[y][x].layer[layer].tileID = tileID
+        self.mapData.tiles[y][x].layer[layer].tileOrientation = orientation
+        self.mapData.tiles[y][x].layer[layer].tileType = tileType 
+    end
 
     -- self:generateMapImage()
 end
 
 -- Function to remove a tile at a specific position
 function Map_Constructor:removeTile(x, y)
-    self.mapData.tiles[y][x] = 0  -- Set the tile to 0 (empty)
+    print("REMOVED TILE")
+    self.mapData.tiles[y][x] = {
+                tileID = 0,
+                tileOrientation = 0,
+                tileType = 0,
+                tileData = 0,
+                layer = {}
+            }
 end
 
 -- Function to get the tile ID from a specific location
@@ -87,36 +102,58 @@ function Map_Constructor:generateMapImage()
     love.graphics.setCanvas(canvas)
     love.graphics.clear()
 
-    for y = 1, mapHeight, 1 do
-        for x = 1, mapWidth, 1 do
+    -- Draw base floor
+    for y = 1, mapHeight do
+        for x = 1, mapWidth do
             local tileID = FLOOR
             local tile_Img = TILE_MANAGER:GetTile(tileID).img
-
             love.graphics.draw(tile_Img, 100 * (x - 1), 100 * (y - 1))
         end
     end
 
+    -- Draw additional layers
     for y = 1, mapHeight do
         for x = 1, mapWidth do
-            local tileID = self:getTileID(x, y)
-            local orientation = self:getOrientation(x, y)
-            local tileType = self:getTileType(x, y)
+            local tile = self.mapData.tiles[y][x]
 
-            if tileID ~= 0 then
-                local tile_Img = TILE_MANAGER:GetTile(tileID, tileType).img
+            -- If it's a single-layer tile (legacy)
+            if tile and tile.tileID then
+                local tileID = tile.tileID
+                local orientation = tile.tileOrientation or 0
+                local tileType = tile.tileType or 0
 
-                -- Compute rotation in radians (orientation * 90°)
-                local rotation = math.rad(orientation * 90)
+                if tileID ~= 0 then
+                    local tile_Img = TILE_MANAGER:GetTile(tileID, tileType).img
+                    local rotation = math.rad(orientation * 90)
 
-                -- Draw centered and rotated
-                love.graphics.draw(
-                    tile_Img,
-                    100 * (x - 1) + 50,  -- center x
-                    100 * (y - 1) + 50,  -- center y
-                    rotation,
-                    1, 1,                -- scale x and y
-                    50, 50               -- origin x and y (center of tile)
-                )
+                    love.graphics.draw(
+                        tile_Img,
+                        100 * (x - 1) + 50,
+                        100 * (y - 1) + 50,
+                        rotation,
+                        1, 1,
+                        50, 50
+                    )
+                end
+
+                if tile.layer then
+                    for layerName, layerTile in pairs(tile.layer) do
+                        tileID = layerTile.tileID
+                        orientation = layerTile.tileOrientation or 0
+                        tileType = layerTile.tileType or 0
+                        local tile_Img = TILE_MANAGER:GetTile(tileID, tileType).img
+                        local rotation = math.rad(orientation * 90)
+
+                        love.graphics.draw(
+                            tile_Img,
+                            100 * (x - 1) + 50,
+                            100 * (y - 1) + 50,
+                            rotation,
+                            1, 1,
+                            50, 50
+                        )
+                    end
+                end
             end
         end
     end
@@ -127,9 +164,9 @@ function Map_Constructor:generateMapImage()
     mapImage = love.graphics.newImage(mapImage)
 
     print("Generated Image")
-
     self.mapData.img = mapImage
 end
+
 
 function Map_Constructor:getMapImage()
     return self.mapData.img

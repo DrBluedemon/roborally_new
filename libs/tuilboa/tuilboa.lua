@@ -2,6 +2,8 @@
 
 -- Shared element definitions (loaded once)
 local sharedElements = {}
+local ids = -1
+
 
 -- Class table
 local tuilboa = {}
@@ -32,6 +34,9 @@ function tuilboa.new()
     local self = setmetatable({}, tuilboa)
     self.elements = sharedElements
     self.activeElements = {}
+    self.id = ids + 1
+    self:removeAllActiveElements()
+    ids = ids + 1
     return self
 end
 
@@ -44,16 +49,16 @@ function tuilboa:newElement(name)
     proto.handler = self
     local instance = proto:new()
 
-    instance.id = #self.activeElements + 1
     table.insert(self.activeElements, instance)
+
+    instance.id = #self.activeElements
+
     return instance
 end
 
 --- Removes all active elements
 function tuilboa:removeAllActiveElements()
-    for i = #self.activeElements, 1, -1 do
-        table.remove(self.activeElements, i)
-    end
+    self.activeElements = {}
 end
 
 --- Removes a specific element
@@ -77,17 +82,66 @@ function tuilboa:setChildrenEnabled(state)
                 end
             end
         end
+
+        if element.setEnabled then
+            element:setEnabled(state)
+        end
     end
 end
 
+function tuilboa:hitTest(mx, my, e)
+    local gameMouseX, gameMouseY = PUSH:toGame(love.mouse.getX(), love.mouse.getY())
+
+    mx = mx or gameMouseX
+    my = my or gameMouseY
+
+    local x, y = e:getAbsolutePosition()
+    local w, h = e.w, e.h
+    return mx >= x and mx <= x + w and
+           my >= y and my <= y + h
+end
+
+function tuilboa:makeHitCheck(mx, my)
+    local topElement
+    local test = {}
+
+    for i, e in ipairs(self.activeElements) do
+        if e then
+            local zCkeck = topElement and topElement.z or 0
+
+            if self:hitTest(mx, my, e) and zCkeck < e.z and e:isVisible() and e:getEnabled() then
+                topElement = e
+            end 
+        end
+    end
+
+    return topElement
+end
+
+function tuilboa:isGettingHoverd(mx, my, e)
+    local topElement
+
+    for i, e in ipairs(self.activeElements) do
+        local zCkeck = topElement and topElement.z or 0
+
+        if self:hitTest(mx, my, e) and zCkeck < e.z and e:isVisible() and e:getEnabled() then
+            topElement = e
+        end
+    end
+
+    local isParent = topElement and topElement.parent and topElement.parent.id == e.id 
+    return topElement and topElement.id == e.id or isParent
+end
 
 --- UI Event Handlers
 function tuilboa:update(dt)
-    for _, e in ipairs(self.activeElements) do if e.update then e:postUpdate(dt) e:update(dt) end end
+    for _, e in ipairs(self.activeElements) do
+        e:update(dt)
+    end
 end
 
 function tuilboa:draw()
-    for _, e in ipairs(self.activeElements) do if e.draw then e:draw() end end
+    for _, e in ipairs(self.activeElements) do if e.draw then e:postDraw() e:draw() e:pastDraw() end end
 end
 
 function tuilboa:mouseMove(x, y, dx, dy)
@@ -97,7 +151,13 @@ end
 
 function tuilboa:mouseDown(x, y, button, isTouch)
     x, y = x or 999999999, y or 999999999
-    for _, e in ipairs(self.activeElements) do if e.mousepressed then e:mousepressed(x, y, button, isTouch) end end
+
+    local e = self:makeHitCheck(x, y)
+
+
+    if e and e.mousepressed then 
+        e:mousepressed(x, y, button, isTouch)
+    end 
 end
 
 function tuilboa:mouseUp(x, y, button, isTouch)
@@ -110,7 +170,7 @@ function tuilboa:wheelMove(x, y)
 end
 
 function tuilboa:keyDown(key, scancode, isrepeat)
-    for _, e in ipairs(self.activeElements) do if e.keyDown then e:keyDown(key, scancode, isrepeat) end end
+    for _, e in ipairs(self.activeElements) do if e.keypressed then e:keypressed(key, scancode, isrepeat) end end
 end
 
 function tuilboa:keyUp(key)

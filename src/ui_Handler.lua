@@ -1,9 +1,15 @@
 local ui_handler = {}
+local z = 0
 
 function ui_handler:newElement(elementName, tuilboa, parent)
     local element = tuilboa:newElement(elementName)
+    element.name = elementName
+    z = z + 1
+    element:setZ(z)
+
     return element
 end
+
 
 function ui_handler:update(dt)
     for i, componet in ipairs(Scene_Manager.active_uiComponents) do
