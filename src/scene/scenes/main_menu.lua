@@ -2,11 +2,11 @@ local main_scene = {
     uiComponent = TULIBOA.new()
 }
 function main_scene:onLoad()
-    self.button = Ui_Handler:newElement("button", self.uiComponent, self)
-    self.button:setPos(20, 20)
-    self.button:setSize(200, 50)
-    self.button:setText("Mapeditor")
-    self.button.onClick = function()
+    self.mapCreation = Ui_Handler:newElement("button", self.uiComponent, self)
+    self.mapCreation:setPos(20, 500)
+    self.mapCreation:setSize(200, 50)
+    self.mapCreation:setText("Mapeditor")
+    self.mapCreation.onClick = function()
         Scene_Manager:SetNewScene("map_creation", "right_to_left")
     end
 end

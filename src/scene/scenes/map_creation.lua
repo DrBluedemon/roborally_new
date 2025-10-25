@@ -120,6 +120,9 @@ end
 function map_creation:getMouseGridPosition()
     local size = self.map:getMapData().height
     local mouseX, mouseY = PUSH:toGame(love.mouse.getPosition())
+    if not mouseX then mouseX = 9999999999 end
+    if not mouseY then mouseY = 9999999999 end
+
     size = 8 / size
 
     mouseX = mouseX - 100
@@ -153,7 +156,7 @@ function map_creation:draw(layerName)
         local mouseX, mouseY = self:getMouseGridPosition()
         local cursorTile = TILE_MANAGER:GetTile(self.selectedTile, self.selectedTileType).img
         local rotation = (self.tileRotation * 90) * math.pi / 180
-        size = 8 / size
+        size = 8 / mapData.height
 
         mouseX = math.max(math.min(mouseX, self.map:getMapData().width - 1), 0)
         mouseY = math.max(math.min(mouseY, self.map:getMapData().height - 1), 0)
