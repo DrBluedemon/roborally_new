@@ -24,8 +24,9 @@ local loaded = false
 _GgameWidth, _GgameHeight = 1600, 1000 --fixed game resolution
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
 
+PUSH:setupScreen(_GgameWidth, _GgameHeight, windowWidth, windowHeight, {fullscreen = flase})
+
 -- push:setupScreen(_GgameWidth, _GgameHeight, windowWidth, windowHeight, {fullscreen = true})
-push:setupScreen(_GgameWidth, _GgameHeight, windowWidth, windowHeight, {fullscreen = flase})
 
 --- [ FUNCTIONS ] ------
 function love.load()
@@ -33,6 +34,7 @@ function love.load()
     TILE_MANAGER:LoadTiles()
     TULIBOA.initElements()
     MAP_MANGER:loadMaps()
+
 
 
     Scene_Manager:LoadScenes()
@@ -95,7 +97,7 @@ end
 
 function love.resize(w, h)
     if not loaded then return end
-    push:resize(w, h)
+    PUSH:resize(w, h)
 end
 
 function love.wheelmoved(x, y)
