@@ -16,6 +16,8 @@ function TileManger:LoadTiles()
         local y = math.floor( (i - 1) / 8 )
         local x = (i - 1) % 8
 
+        print(i)
+
         local canvas = love.graphics.newCanvas(100, 100)
         love.graphics.setCanvas(canvas)
         love.graphics.clear()
