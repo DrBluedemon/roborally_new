@@ -93,13 +93,17 @@ function Map_Constructor:getTileType(x, y)
     return tileType
 end
 
--- Generate Map Image
 function Map_Constructor:generateMapImage()
     local mapWidth = self.mapData.width
     local mapHeight = self.mapData.height
     local canvas = love.graphics.newCanvas(mapWidth * 100, mapHeight * 100)
 
+    -- Save current canvas
+    local previousCanvas = love.graphics.getCanvas()
+
+    -- Render to canvas
     love.graphics.setCanvas(canvas)
+    love.graphics.origin()  -- Reset any transformations (especially from push)
     love.graphics.clear()
 
     -- Draw base floor
@@ -116,7 +120,6 @@ function Map_Constructor:generateMapImage()
         for x = 1, mapWidth do
             local tile = self.mapData.tiles[y][x]
 
-            -- If it's a single-layer tile (legacy)
             if tile and tile.tileID then
                 local tileID = tile.tileID
                 local orientation = tile.tileOrientation or 0
@@ -137,7 +140,7 @@ function Map_Constructor:generateMapImage()
                 end
 
                 if tile.layer then
-                    for layerName, layerTile in pairs(tile.layer) do
+                    for _, layerTile in pairs(tile.layer) do
                         tileID = layerTile.tileID
                         orientation = layerTile.tileOrientation or 0
                         tileType = layerTile.tileType or 0
@@ -158,15 +161,16 @@ function Map_Constructor:generateMapImage()
         end
     end
 
-    love.graphics.setCanvas()
+    -- Restore original canvas
+    love.graphics.setCanvas(previousCanvas)
 
+    -- Generate image
     local mapImage = canvas:newImageData()
     mapImage = love.graphics.newImage(mapImage)
 
     print("Generated Image")
     self.mapData.img = mapImage
 end
-
 
 function Map_Constructor:getMapImage()
     return self.mapData.img
