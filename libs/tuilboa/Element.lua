@@ -57,10 +57,13 @@ end
 
 -- Hover check (uses absolute position)
 function Element:isHovered(mx, my)
-    local gameMouseX, gameMouseY = PUSH:toGame(love.mouse.getX(), love.mouse.getY())
+    local gameMouseX, gameMouseY = PUSH:toGame(love.mouse.getX(), love.mouse.getY()) 
+    if not gameMouseX then gameMouseX = 9999999999 end
+    if not gameMouseY then gameMouseY = 9999999999 end
 
     mx = mx or gameMouseX
     my = my or gameMouseY
+
     local x, y = self:getAbsolutePosition()
     return mx >= x 
     and mx <= x + self.w and
